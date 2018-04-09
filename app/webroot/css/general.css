@@ -1,0 +1,138 @@
+*, *:focus, *:active{
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input[type="checkbox"]:focus{
+  outline: none !important;
+}
+
+.login-container{
+  width: 1200px;
+  height: 420px;
+  background-color: #F8F8F8;
+  margin: 12em auto;
+}
+
+/* .login-screen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://i.ytimg.com/vi/Gg31S_hqmpQ/maxresdefault_live.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+} */
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
+}
+
+.margin-top{
+  margin-top: 1em !important;
+}
+
+.margin-top2{
+  margin-top: 2em;
+}
+
+.margin-top5{
+  margin-top: 5em;
+}
+
+.duoc-img {
+  width: 35%;
+  height: 420px;
+  float: left;
+  display: block;
+  background-image: url('/img/duoc-antonio-varas.jpg');
+  background-size: cover;
+}
+
+.duoc-login-form {
+  width: 65%;
+  display: block;
+  float: right;
+}
+
+.img-logo {
+  width: 120px;
+  height: auto;
+}
+
+.margin-bottom0{
+  margin-bottom: 0;
+}
+
+.margin-bottom{
+  margin-bottom: 1em !important;
+}
+
+.margin-bottom2{
+  margin-bottom: 2em !important;
+}
+
+.margin-bottom5{
+  margin-bottom: 5em !important;
+}
+
+.padding2{
+  padding: 2rem 2rem;
+}
+
+.width80{
+  width: 180px;
+  display: block;
+  margin: 0 auto;
+}
+
+.dropdown-menu-right{
+  left: -7em;
+}
+
+.border-radius0{
+  border-radius: 0;
+}
+
+.bg-custom {
+  background-color: #35495D !important;
+}
+
+.border-yellow {
+  border-color: rgb(180, 182, 98) !important;
+}
+
+.text-yellow {
+  color: rgb(180, 182, 98);
+}
+
+.border-pink {
+  border-color: rgb(209, 190, 175) !important;
+}
+
+.text-pink {
+  color: rgb(209, 190, 175);
+}
+
+.border-lightblue {
+  border-color: #3b8ea5;
+}
+
+.text-lightblue {
+  color: #3b8ea5;
+}
+
+.clasic-font{
+  font-family: "Segoe UI", "Source Sans Pro", Calibri, Candara, Arial, sans-serif;
+}
+
+table#stickyHeader thead {
+  border-top: none;
+  border-bottom: none;
+  background-color: #FFF;
+}
+
+.btn:focus,.btn:active {
+  outline: none !important;
+  box-shadow: none;
+}

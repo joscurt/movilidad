@@ -1,0 +1,75 @@
+node {
+    // Parametros de configuración de proyecto
+    String practice = "proy"
+    String client = "duoc"
+    String service = "movilidad" //Nombre del servicio SWARM a levantar
+    String project = "movilidad" // Nombre y clave del proyecto que será visualizado en Sonar
+    String channelSlack = "movilidad-duoc" // Clave del proyecto que será visualizado en Slack
+    String exclusionsFolder = "**/Cakephp2/Plugin/DebugKit/**,**/plugins/**,**/vendors/**" // Carpetas que se excluyen a la revisión de código, se deben separar por comas
+    String source = "app" // Carpeta contenedora de los fuentes que serán revisados por Sonar, la raíz se define como "."
+    String binaries = "." // Carpeta contenedora de los binarios que serán revisados por Sonar, la raíz se define como "."
+
+    //********* Parametros de configuración global, no se modifican *********//
+    String branchGit = "developer"
+    String credentialsIdGit = "arquitectura-gitlab-credentials"
+    String urlGit = "https://gitlab.com/axity-apps-" + practice + "/" +  client + "/" + project + ".git"
+    String baseUrlSlack = "https://axity-chile.slack.com/services/hooks/jenkins-ci/"
+    String tokenSlack = "po0u9hl9yP8bSU0HXPgchlo5"
+    String projectKey = client + "-" + service
+    //***********************************************************************//
+
+    def mvnHome = tool 'Maven-3.5.2'
+
+    notifySlack(baseUrlSlack, channelSlack, tokenSlack, 'Started Job', '#fffc33')
+
+    stage("GIT") {
+        try {
+            git branch: branchGit, credentialsId: credentialsIdGit, url: urlGit
+        }
+        catch(Exception ex) {
+            notifySlack(baseUrlSlack, channelSlack, tokenSlack, 'Failure Checkout Git Project Job ' + ex.getMessage(), '#e81d42')
+            break
+        }
+    }
+
+    //stage('Build') {
+        // Run the maven build this is a release that keeps the development version 
+        // unchanged and uses Jenkins to provide the version number uniqueness
+        //sh "${mvnHome}/bin/mvn -DreleaseVersion=${currentBuild.number} -DdevelopmentVersion=${currentBuild.number} -DpushChanges=false -DlocalCheckout=true -DpreparationGoals=initialize compile"
+    //}
+
+    stage("SonarQube analysis") {
+        script {
+           sonarScanner = tool 'SonarScanner';
+        }
+        withSonarQubeEnv("sonar") {
+            try {
+                sh "${sonarScanner}/bin/sonar-scanner -D sonar.projectKey=${projectKey} -D sonar.projectName=${projectKey} -D sonar.projectVersion=1.0 -D sonar.sourceEncoding=UTF-8 -D sonar.sources=${source} -D sonar.exclusions=${exclusionsFolder} -D sonar.ts.coverage.lcovReportPath=test-results/coverage/coverage.lcov -D sonar.java.binaries=${binaries}"
+            }
+            catch (Exception ex) {
+                notifySlack(baseUrlSlack, channelSlack, tokenSlack, 'Failure SonarScanner Job ' + ex.getMessage(), '#e81d42')
+                break
+            }
+        }
+	}
+
+    stage("Quality Gate") {
+        timeout(time: 1, unit: 'HOURS') {
+            def qg = waitForQualityGate()
+            if (qg.status == 'ERROR') {
+                notifySlack(baseUrlSlack, channelSlack, tokenSlack, 'Failure SonarQualityGate Job ' + qg.status, '#e81d42')
+                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+            } else {
+                notifySlack(baseUrlSlack, channelSlack, tokenSlack, 'Ending Successfully Job', '#36ff33')
+            }
+        }
+    }
+
+    // TODO
+    // stage("Unit Test"){}
+}
+
+def notifySlack(baseUrlSlack, channelSlack, tokenSlack, messageSlack, colorSlack) {
+    // send to Slack
+    slackSend baseUrl: baseUrlSlack, channel: channelSlack, token: tokenSlack, color: colorSlack, message: messageSlack + " ${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})"
+}
